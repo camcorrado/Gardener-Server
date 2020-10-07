@@ -4,6 +4,9 @@ const morgan = require("morgan");
 const cors = require("cors");
 const helmet = require("helmet");
 const { NODE_ENV } = require("./config");
+const authRouter = require("./auth/auth-router");
+const gardensRouter = require("./gardens/gardens-router");
+const usersRouter = require("./users/users-router");
 
 const app = express();
 const { CLIENT_ORIGIN } = require("./config");
@@ -17,6 +20,10 @@ app.use(
     origin: CLIENT_ORIGIN,
   })
 );
+
+app.use("/api/auth", authRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/gardens", gardensRouter);
 
 app.use(function errorHandler(error, req, res, next) {
   let response;

@@ -1,8 +1,9 @@
-const xss = require("xss");
-
 const GardensService = {
   getGardenForUser(knex, id) {
     return knex.from("gardens").select("*").where("user_id", id).first();
+  },
+  getById(knex, id) {
+    return knex.from("gardens").select("*").where("id", id).first();
   },
   insertGarden(knex, newGarden) {
     return knex

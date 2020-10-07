@@ -2,7 +2,6 @@ const app = require("../src/app");
 const bcrypt = require("bcryptjs");
 const helpers = require("./test-helpers");
 const knex = require("knex");
-const moment = require("moment");
 
 describe("Users Endpoints", function () {
   let db;
@@ -166,11 +165,6 @@ describe("Users Endpoints", function () {
               expect(res.body.full_name).to.eql(newUser.full_name);
               expect(res.body).to.not.have.property("password");
               expect(res.headers.location).to.eql(`/api/users/${res.body.id}`);
-              const expectedDate = moment(new Date()).format("ddd MMM DD YYYY");
-              const actualDate = moment(new Date(res.body.date_created)).format(
-                "ddd MMM DD YYYY"
-              );
-              expect(actualDate).to.eql(expectedDate);
             })
             .expect((res) =>
               db
@@ -181,13 +175,6 @@ describe("Users Endpoints", function () {
                 .then((row) => {
                   expect(row.email).to.eql(newUser.email);
                   expect(row.full_name).to.eql(newUser.full_name);
-                  const expectedDate = moment(new Date()).format(
-                    "ddd MMM DD YYYY"
-                  );
-                  const actualDate = moment(
-                    new Date(res.body.date_created)
-                  ).format("ddd MMM DD YYYY");
-                  expect(actualDate).to.eql(expectedDate);
 
                   return bcrypt.compare(newUser.password, row.password);
                 })

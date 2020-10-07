@@ -1,6 +1,5 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const moment = require("moment");
 
 function makeFixtures() {
   const testUsers = makeUsersArray();
@@ -15,36 +14,24 @@ function makeUsersArray() {
       full_name: "Test user 1",
       email: "TU1@gmail.com",
       password: "Password1!",
-      date_created: moment(new Date("2029-01-22T16:28:32.615Z")).format(
-        "ddd MMM DD YYYY"
-      ),
     },
     {
       id: 2,
       full_name: "Test user 2",
       email: "TU2@gmail.com",
       password: "Password2!",
-      date_created: moment(new Date("2029-01-22T16:28:32.615Z")).format(
-        "ddd MMM DD YYYY"
-      ),
     },
     {
       id: 3,
       full_name: "Test user 3",
       email: "TU3@gmail.com",
       password: "Password3!",
-      date_created: moment(new Date("2029-01-22T16:28:32.615Z")).format(
-        "ddd MMM DD YYYY"
-      ),
     },
     {
       id: 4,
       full_name: "Test user 4",
       email: "TU4@gmail.com",
       password: "Password4!",
-      date_created: moment(new Date("2029-01-22T16:28:32.615Z")).format(
-        "ddd MMM DD YYYY"
-      ),
     },
   ];
 }
@@ -117,7 +104,6 @@ function makeExpectedUser(user) {
     id: user.id,
     full_name: user.full_name,
     email: user.email,
-    date_created: moment(user.date_created).format("ddd MMM DD YYYY"),
   };
 }
 

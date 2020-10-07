@@ -21,28 +21,6 @@ describe("Gardens Endpoints", function () {
 
   afterEach("cleanup", () => helpers.cleanTables(db));
 
-  describe(`GET /api/gardens`, () => {
-    context(`Given no gardens`, () => {
-      it(`responds with 200 and an empty list`, () => {
-        return supertest(app).get("/api/gardens").expect(200, []);
-      });
-    });
-
-    context("Given there are gardens in the database", () => {
-      beforeEach("insert gardens", () =>
-        helpers.seedGardens(db, testUsers, testGardens)
-      );
-
-      it("responds with 200 and all of the gardens", () => {
-        const expectedGardens = testGardens.map((garden) =>
-          helpers.makeExpectedGarden(garden)
-        );
-
-        return supertest(app).get("/api/gardens").expect(200, expectedGardens);
-      });
-    });
-  });
-
   describe(`GET /api/gardens/:garden_id`, () => {
     context(`Given no gardens`, () => {
       beforeEach(() => helpers.seedUsers(db, testUsers));
@@ -146,7 +124,6 @@ describe("Gardens Endpoints", function () {
           zipcode: 99999,
           ...testGardens[0],
         };
-
         it(`responds with 400 required error when '${field}' is missing`, () => {
           delete registerAttemptBody[field];
 

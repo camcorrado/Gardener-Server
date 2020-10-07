@@ -37,7 +37,6 @@ usersRouter
             password: hashedPassword,
             full_name,
             email,
-            deactivated,
           };
 
           return UsersService.insertUser(req.app.get("db"), newUser).then(

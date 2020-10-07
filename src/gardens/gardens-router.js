@@ -36,7 +36,7 @@ gardensRouter
   .route("/:garden_id")
   .all(checkGardenExists)
   .get((req, res) => {
-    res.json(ProfilesService.serializeProfile(res.profile));
+    res.json(GardensService.serializeGarden(res.garden));
   })
   .patch(requireAuth, (req, res, next) => {
     let updatedGarden = {};

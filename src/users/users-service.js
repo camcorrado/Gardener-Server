@@ -1,6 +1,5 @@
 const bcrypt = require("bcryptjs");
 const REGEX_UPPER_LOWER_NUMBER_SPECIAL = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&])[\S]+/;
-const moment = require("moment");
 const xss = require("xss");
 
 const UsersService = {
@@ -34,9 +33,6 @@ const UsersService = {
       id: user.id,
       full_name: xss(user.full_name),
       email: xss(user.email),
-      date_created: moment(new Date(user.date_created)).format(
-        "ddd MMM DD YYYY"
-      ),
     };
   },
   insertUser(knex, newUser) {
