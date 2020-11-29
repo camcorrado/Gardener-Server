@@ -6,21 +6,9 @@ const { requireAuth } = require("../middleware/jwt-auth");
 const gardensRouter = express.Router();
 
 gardensRouter.route("/").post(requireAuth, (req, res, next) => {
-  const { plants, zipcode } = req.body;
-  const newGarden = {
-    plants,
-    zipcode,
-  };
+  const newGarden = {};
 
-  for (const [key, value] of Object.entries(newGarden)) {
-    if (value == null) {
-      return res
-        .status(400)
-        .json({ error: `Missing '${key}' in request body` });
-    }
-  }
-
-  newGarden.user_id = req.user.id;
+  newGarden.id = req.user.id;
 
   GardensService.insertGarden(req.app.get("db"), newGarden)
     .then((garden) => {
@@ -40,7 +28,7 @@ gardensRouter
   })
   .patch(requireAuth, (req, res, next) => {
     let updatedGarden = {};
-    const { plants, zipcode } = req.body;
+    const { plants, hardiness_zone } = req.body;
 
     if (plants) {
       updatedGarden.plants = plants;
@@ -50,12 +38,12 @@ gardensRouter
         .json({ error: `Missing 'plants' in request body` });
     }
 
-    if (zipcode) {
-      updatedGarden.zipcode = zipcode;
+    if (hardiness_zone) {
+      updatedGarden.hardiness_zone = hardiness_zone;
     } else {
       return res
         .status(400)
-        .json({ error: `Missing 'zipcode' in request body` });
+        .json({ error: `Missing 'hardiness_zone' in request body` });
     }
 
     GardensService.updateGarden(

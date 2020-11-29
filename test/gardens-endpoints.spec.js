@@ -21,6 +21,25 @@ describe("Gardens Endpoints", function () {
 
   afterEach("cleanup", () => helpers.cleanTables(db));
 
+  describe(`POST /api/gardens`, () => {
+    beforeEach("insert users", () => helpers.seedUsers(db, testUsers));
+
+    it(`creates a garden, responding with 201 and the new garden`, function () {
+      return supertest(app)
+        .post("/api/gardens")
+        .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
+        .expect(201)
+        .expect((res) => {
+          expect(res.body).to.have.property("id");
+          expect(res.body).to.have.property("hardiness_zone");
+          expect(res.body).to.have.property("plants");
+        })
+        .expect((res) =>
+          db.from("gardens").select("*").where({ id: res.body.id }).first()
+        );
+    });
+  });
+
   describe(`GET /api/gardens/:garden_id`, () => {
     context(`Given no gardens`, () => {
       beforeEach(() => helpers.seedUsers(db, testUsers));
@@ -29,7 +48,6 @@ describe("Gardens Endpoints", function () {
         const gardenId = 123456;
         return supertest(app)
           .get(`/api/gardens/${gardenId}`)
-          .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
           .expect(404, { error: `Garden doesn't exist` });
       });
     });
@@ -44,68 +62,9 @@ describe("Gardens Endpoints", function () {
         const expectedGarden = helpers.makeExpectedGarden(
           testGardens[gardenId - 1]
         );
-
         return supertest(app)
           .get(`/api/gardens/${gardenId}`)
-          .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
           .expect(200, expectedGarden);
-      });
-    });
-  });
-
-  describe(`POST /api/gardens`, () => {
-    beforeEach("insert users", () => helpers.seedUsers(db, testUsers));
-
-    it(`creates a garden, responding with 201 and the new garden`, function () {
-      const testUser = testUsers[0];
-      const newGarden = {
-        user_id: testUser.id,
-        plants: ["Plant 1", "Plant 2"],
-        zipcode: 66666,
-      };
-      return supertest(app)
-        .post("/api/gardens")
-        .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
-        .send(newGarden)
-        .expect(201)
-        .expect((res) => {
-          expect(res.body).to.have.property("id");
-          expect(res.body.user_id).to.eql(newGarden.user_id);
-          expect(res.body.plants).to.eql(newGarden.plants);
-          expect(res.body.zipcode).to.eql(newGarden.zipcode);
-        })
-        .expect((res) =>
-          db
-            .from("gardens")
-            .select("*")
-            .where({ id: res.body.id })
-            .first()
-            .then((row) => {
-              expect(row.user_id).to.eql(newGarden.user_id);
-              expect(row.plants).to.eql(newGarden.plants);
-              expect(row.zipcode).to.eql(newGarden.zipcode);
-            })
-        );
-    });
-
-    const requiredFields = ["plants", "zipcode"];
-
-    requiredFields.forEach((field) => {
-      const newGarden = {
-        plants: ["test plants"],
-        zipcode: 666666,
-        ...testGardens[0],
-      };
-
-      it(`responds with 400 and an error message when the '${field}' is missing`, () => {
-        delete newGarden[field];
-        return supertest(app)
-          .post("/api/gardens")
-          .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
-          .send(newGarden)
-          .expect(400, {
-            error: `Missing '${field}' in request body`,
-          });
       });
     });
   });
@@ -116,12 +75,12 @@ describe("Gardens Endpoints", function () {
         helpers.seedGardens(db, testUsers, testGardens)
       );
 
-      const requiredFields = ["plants", "zipcode"];
+      const requiredFields = ["plants", "hardiness_zone"];
 
       requiredFields.forEach((field) => {
         const registerAttemptBody = {
-          plants: ["test patch plants"],
-          zipcode: 99999,
+          plants: [{ nme: "plant test" }],
+          hardiness_zone: "7b",
           ...testGardens[0],
         };
         it(`responds with 400 required error when '${field}' is missing`, () => {
@@ -138,8 +97,11 @@ describe("Gardens Endpoints", function () {
       it("responds with 204 and updates the garden", () => {
         const idToUpdate = 1;
         const updatedGarden = {
-          plants: ["updated plants"],
-          zipcode: 77777,
+          plants: [
+            { name: "updated plant test" },
+            { name: "updated plant test 2" },
+          ],
+          hardiness_zone: "8",
         };
 
         const expectedGarden = {
@@ -162,16 +124,17 @@ describe("Gardens Endpoints", function () {
         const idToUpdate = 1;
         const updatedGarden = {
           ...testGardens[0],
-          zipcode: 88888,
+          hardiness_zone: "9",
         };
 
         const expectedGarden = {
           ...testGardens[1],
           ...updatedGarden,
         };
+
         return supertest(app)
           .patch(`/api/gardens/${idToUpdate}`)
-          .set("Authorization", helpers.makeAuthHeader(testUsers[1]))
+          .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
           .send({
             ...updatedGarden,
             fieldToIgnore: "should not be in GET response",

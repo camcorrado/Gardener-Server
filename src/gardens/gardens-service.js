@@ -1,6 +1,6 @@
 const GardensService = {
   getGardenForUser(knex, id) {
-    return knex.from("gardens").select("*").where("user_id", id).first();
+    return knex.from("gardens").select("*").where("id", id).first();
   },
   getById(knex, id) {
     return knex.from("gardens").select("*").where("id", id).first();
@@ -18,11 +18,15 @@ const GardensService = {
     return knex("gardens").where({ id }).update(newGardenFields);
   },
   serializeGarden(garden) {
+    let plantArray = [];
+    if (garden.plants) {
+      garden.plants.map((plant) => plantArray.push(JSON.parse(plant)));
+    }
+
     return {
       id: garden.id,
-      user_id: garden.user_id,
-      plants: garden.plants,
-      zipcode: garden.zipcode,
+      plants: plantArray,
+      hardiness_zone: garden.hardiness_zone,
     };
   },
 };

@@ -39,28 +39,24 @@ function makeUsersArray() {
 function makeGardensArray(users) {
   return [
     {
-      id: 1,
-      user_id: users[0].id,
-      plants: ["plant 1", "plant 2"],
-      zipcode: 11111,
+      id: users[0].id,
+      plants: [{ name: "plant 1" }, { name: "plant 2" }],
+      hardiness_zone: "1",
     },
     {
-      id: 2,
-      user_id: users[1].id,
-      plants: ["plant 3", "plant 4"],
-      zipcode: 22222,
+      id: users[1].id,
+      plants: [{ name: "plant 3" }, { name: "plant 4" }],
+      hardiness_zone: "2",
     },
     {
-      id: 3,
-      user_id: users[2].id,
-      plants: ["plant 5", "plant 6"],
-      zipcode: 33333,
+      id: users[2].id,
+      plants: [{ name: "plant 5" }, { name: "plant 6" }],
+      hardiness_zone: "3",
     },
     {
-      id: 4,
-      user_id: users[3].id,
-      plants: ["plant 7", "plant 8"],
-      zipcode: 44444,
+      id: users[3].id,
+      plants: [{ name: "plant 7" }, { name: "plant 8" }],
+      hardiness_zone: "4",
     },
   ];
 }
@@ -93,9 +89,6 @@ function seedGardens(db, users, gardens) {
   return db.transaction(async (trx) => {
     await seedUsers(trx, users);
     await trx.into("gardens").insert(gardens);
-    await trx.raw(`SELECT setval('gardens_id_seq', ?)`, [
-      gardens[gardens.length - 1].id,
-    ]);
   });
 }
 
@@ -110,9 +103,8 @@ function makeExpectedUser(user) {
 function makeExpectedGarden(garden) {
   return {
     id: garden.id,
-    user_id: garden.user_id,
     plants: garden.plants,
-    zipcode: garden.zipcode,
+    hardiness_zone: garden.hardiness_zone,
   };
 }
 
