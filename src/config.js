@@ -12,5 +12,4 @@ module.exports = {
     process.env.TEST_DATABASE_URL ||
     "postgresql://dunder_mifflin@localhost/gardener-test",
   CLIENT_ORIGIN: process.env.CLIENT_ORIGIN || "http://localhost:3000",
-  TREFLE_TOKEN: process.env.TREFLE_TOKEN,
 };
